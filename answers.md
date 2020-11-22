@@ -55,18 +55,6 @@ def merge_inversion(left,right,inv_left,inv_right):
     return combine, total_inversion
 ```
 
-### Example 
-
-Below we have sketched a schematic example of how the algorithm works. On the left in black we show the *divide* phase. Individual rows show the $K$ steps we need to divide (and then again to conquer). In blue we have sketched the *conquer* phase. Green annotations show where inversions occure and in red have added a simple iterator that counts the inversions at each step $k$ and the sum of all of them above. 
-
-Note that the bottom row of the *divide* phase is also our first point of action of the *conquer* phase. We compare adjacent lists two each other, all of which have just one elements. Sorting them and counting inversions is very simple. We find two inversions - $3>2$ and $9>7$ - and for each of them we increment the iterator by $+1$.
-
-At the next step we have three lists so we just merge the first two. Here we first compare $2$ - at position $i=0$ - to $1$ at position $m=2$. We find that $2>1$ so we have encountered an inversion. But this time we increment the iterator by $m-i=+2$ since $3$ is also greater than $1$. Once again we also sort the elements we look at. 
-
-It should be straight-forward to see that in the remainder of the divide phase we find no more inversions and that we therefore end up with $4$ inversions in total.
-
-![Schema](www/scheme.png) 
-
 ## Complexity
 
 Let $T(n)$ the time complexity of the algorithm. Given that *MergeSort* involves splitting the list in then recursively *MergeSort* twice at each recursion we have
@@ -115,6 +103,18 @@ so the algorithm correctly returns 0.
 
 We will prove by induction. Suppose we are at the $k$-th step of the algorithm and assume that in all previous steps the number of inversions have been computed correctly and list $A_k$ is sorted correctly. At the step $k$ we then split $A_k$ into `left` and `right`. Then we have already demonstrated above how the `merge_inversion` will correctly merge `left` and `right` and increment the `inversion` counter. Applying the principle of mathematical induction we conclude that the algorithm is correct.
 
+## Example 
+
+Below we have sketched a schematic example of how the algorithm works. On the left in black we show the *divide* phase. Individual rows show the $K$ steps we need to divide (and then again to conquer). In blue we have sketched the *conquer* phase. Green annotations show where inversions occure and in red have added a simple iterator that counts the inversions at each step $k$ and the sum of all of them above. 
+
+Note that the bottom row of the *divide* phase is also our first point of action of the *conquer* phase. We compare adjacent lists two each other, all of which have just one elements. Sorting them and counting inversions is very simple. We find two inversions - $3>2$ and $9>7$ - and for each of them we increment the iterator by $+1$.
+
+At the next step we have three lists so we just merge the first two. Here we first compare $2$ - at position $i=0$ - to $1$ at position $m=2$. We find that $2>1$ so we have encountered an inversion. But this time we increment the iterator by $m-i=+2$ since $3$ is also greater than $1$. Once again we also sort the elements we look at. 
+
+It should be straight-forward to see that in the remainder of the divide phase we find no more inversions and that we therefore end up with $4$ inversions in total.
+
+![Schema](www/scheme.png) 
+
 # String distance
 
 
@@ -129,6 +129,7 @@ def edit_distance(str_1, str_2):
 	n = len(str_2)
 	D = matrix (m x n)
 	set each element in D to zero
+	optimal_sequence =
 	# Set O-th row...
 	for i from 1 to m:
 		D[i,0] = i
@@ -143,15 +144,25 @@ def edit_distance(str_1, str_2):
 				deletion_cost = 1
 				insertion_cost = 1
 				substitution_cost = 1
-			D[i,j] = minimum(
+			edit_costs = [
 				D[i-1,j] + deletion_cost, 			# delete
 				D[i,j-1] + insertion_cost, 			# insert
 				D[i-1,j-1] + substitution_cost 		# substitute
-			) 
-	return D[m,n]
+			]
+			D[i,j] = minimum(edit_choices) 
+			if minimum(edit_costs) == D[i-1,j-1] + substitution_cost:
+				if substitution_cost == 0:
+					append optimal_sequence by None
+				else:
+					append optimal_sequence by "S"
+			else if minimum(edit_costs) == D[i-1,j] + deletion_cost:
+				append optimal_sequence by "D"
+			else:
+				append optimal_sequence by "I"
+	return D[m,n], optimal_sequence
 ```
 
-### (b) Penalty 
+### (b) Increased penalty for delete/insert
 
 ```
 def edit_distance(str_1, str_2):
@@ -174,10 +185,33 @@ def edit_distance(str_1, str_2):
 				deletion_cost = 2
 				insertion_cost = 2
 				substitution_cost = 1
-			D[i,j] = minimum(
+			edit_costs = [
 				D[i-1,j] + deletion_cost, 			# delete
 				D[i,j-1] + insertion_cost, 			# insert
 				D[i-1,j-1] + substitution_cost 		# substitute
-			) 
-	return D[m,n]
+			]
+			D[i,j] = minimum(edit_choices) 
+			if minimum(edit_costs) == D[i-1,j-1] + substitution_cost:
+				if substitution_cost == 0:
+					append optimal_sequence by None
+				else:
+					append optimal_sequence by "S"
+			else if minimum(edit_costs) == D[i-1,j] + deletion_cost:
+				append optimal_sequence by "D"
+			else:
+				append optimal_sequence by "I"
+	return D[m,n], optimal_sequence
 ```
+
+## Example
+
+![Schema](www/scheme2.png)
+
+![Schema](www/scheme3.png)
+
+## Complexity
+
+Note that here we are looking at nested loop where the $j$-loop requires $n$ operations - one for each column - and the $i$-loop requires $m$ operations - one for each row. Hence the total complexity is of order $\mathcal{O}(nm)$.
+
+## Proof of correctness
+
