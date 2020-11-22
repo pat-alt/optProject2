@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>answers</title>
+
+
+
+</head>
+
+<body>
+
+<h1 id="toc_0">Inversion</h1>
+
+<p>The algorithm we will perform is the powerful <code>mergesort</code>, but in each step of the merging phase we will count the inversions. Taking advantage of the fact that the two arrays \(\mathbf{l}\) and \(\mathbf{r}\) that we are comparing at each step \(k\) are already sorted in non-decreasing order, we have that if \(\mathbf{l}_i &gt; \mathbf{r}_j\) then this implies that \(\mathbf{l}_i &gt; \mathbf{r}_m\) for all \(m &gt; j\).</p>
+
+<h2 id="toc_1">Pseudocode</h2>
+
+<p>The pseudo-code of this algorithm will consists of two functions, <code>count_inversions</code> and <code>merge_inversion</code>. The former is the main, recursive function that uses the <code>merge_inversion</code> as a sub-method. To understand the pseudo-code let us consider a simple example of a list: <code>A=[3,1,2,4]</code>, which has only one inversion. The <code>count_inversions</code> function will recursively split <code>A</code> into halves until it reaches the \(K\)-th step when \(A_K\) is of length 1. At that point it exits the recursion and simply returns the list \(A_K\) itself and a pseudo-inversion count of \(0\). At all other steps it returns the output from <code>merge_inversion(left,right,inv_left,inv_right)</code> - a list sorted in non-decreasing order and the cumulative count of inversions.</p>
+
+<div><pre><code class="language-none">def count_inversions(A):
+    if len(A) = 1
+        # In case we are already at final divisions:
+        return A, 0
+    else:
+        # For all other steps k&lt;K:
+        middle = len(A)/2 
+        intialize left, right
+        for x in A up to middle: 
+            add x to left 
+        for x in A after middle: 
+            add x to right 
+        left, inv_left = count_inversions(left) 
+        right, inv_right = count_inversions(right) 
+        return merge_inversion(left,right,inv_left,inv_right)</code></pre></div>
+
+<p>The <code>merge_inversion</code> function implements the \(k\)-th step logic: <em>mergesort</em> and <em>counting inversions</em>. The latter works in the same way it always does, it compares two elements <code>left[0]</code> and <code>right[0]</code> and appends the output list <code>combine</code> by the smaller value. How inversions are counted should be straight-forward to see as well: when comparing <code>left[0]</code> and <code>right[0]</code> suppose we have <code>left[0] &gt; right[0]</code>, so we have encountered an inversion. Then this implies that since <code>left</code> is already sorted in non-decreasing order the <code>inversion</code> counter should be incremented by the length of <code>left</code>.</p>
+
+<div><pre><code class="language-none">def merge_inversion(left,right,inv_left,inv_right):
+     # Initialize:  
+    combine = []
+    inversion = 0
+    # Merge and count inversions:
+    while len(left) != 0 and len(right)!=0:
+        if left[0] &gt; right[0]:
+            add right[0] to combine
+            add len(left) to inversion
+            remove right[0] from right
+        else:
+            add left[0] to combine
+            remove left[0] from left
+    endwhile
+    # Take care of remaining elements:
+    while len(left) != 0:
+        add left[0] to combine
+        remove left[0] from left
+    endwhile
+    while len(right) != 0:
+        add right[0] to combine
+        remove right[0] from right
+    endwhile
+    # Add them all up:
+    total_inversion = inversion + inv_left + inv_right
+    return combine, total_inversion</code></pre></div>
+
+<h3 id="toc_2">Example</h3>
+
+<p>Below we have sketched a schematic example of how the algorithm works. On the left in black we show the <em>divide</em> phase. Individual rows show the \(K\) steps we need to divide (and then again to conquer). In blue we have sketched the <em>conquer</em> phase. Green annotations show where inversions occure and in red have added a simple iterator that counts the inversions at each step \(k\) and the sum of all of them above. </p>
+
+<p>Note that the bottom row of the <em>divide</em> phase is also our first point of action of the <em>conquer</em> phase. We compare adjacent lists two each other, all of which have just one elements. Sorting them and counting inversions is very simple. We find two inversions - \(3&gt;2\) and \(9&gt;7\) - and for each of them we increment the iterator by \(+1\).</p>
+
+<p>At the next step we have three lists so we just merge the first two. Here we first compare \(2\) - at position \(i=0\) - to \(1\) at position \(m=2\). We find that \(2&gt;1\) so we have encountered an inversion. But this time we increment the iterator by \(m-i=+2\) since \(3\) is also greater than \(1\). Once again we also sort the elements we look at. </p>
+
+<p>It should be straight-forward to see that in the remainder of the divide phase we find no more inversions and that we therefore end up with \(4\) inversions in total.</p>
+
+<p><img src="www/scheme.png" alt="Schema"> </p>
+
+<h2 id="toc_3">Complexity</h2>
+
+<h2 id="toc_4">Proof of correctness</h2>
+
+<p><strong>Case where \(|A| \le 1\):</strong></p>
+
+<p>In this case it is trivial that the algorithm is corrects since we will jump straight to </p>
+
+<div><pre><code class="language-none">if len(A) = 1
+    # In case we are already at final divisions:
+    return A, 0</code></pre></div>
+
+<p>so the algorithm correctly returns 0.</p>
+
+<p><strong>General case</strong> </p>
+
+<p>We will prove by induction. Suppose we are at the \(k\)-th step of the algorithm and assume that in all previous steps the number of inversions have been computed correctly and list \(A_k\) is sorted correctly. At the step \(k\) we then split \(A_k\) into <code>left</code> and <code>right</code>. Then we have already demonstrated above how the <code>merge_inversion</code> will correctly merge <code>left</code> and <code>right</code> and increment the <code>inversion</code> counter. Applying the principle of mathematical induction we conclude that the algorithm is correct.</p>
+
+<h1 id="toc_5">Strings</h1>
+
+
+
+<script type="text/x-mathjax-config">
+(function () {
+
+MathJax.Hub.Config({
+	'showProcessingMessages': false,
+	'messageStyle': 'none'
+});
+
+if (typeof MathJaxListener !== 'undefined') {
+	MathJax.Hub.Register.StartupHook('End', function () {
+		MathJaxListener.invokeCallbackForKey_('End');
+	});
+}
+
+})();
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+</body>
+
+</html>
