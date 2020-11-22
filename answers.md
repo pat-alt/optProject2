@@ -140,11 +140,13 @@ def edit_distance(str_1, str_2):
 			if s[i] == t[j]:
 				substitution_cost = 0
 			else:
+				deletion_cost = 1
+				insertion_cost = 1
 				substitution_cost = 1
 			D[i,j] = minimum(
-				D[i-1,j] + 1, 						# delete
-			D[i,j-1] + 1, 							# insert
-			D[i-1,j-1] + substitution_cost 			# substitute
+				D[i-1,j] + deletion_cost, 			# delete
+				D[i,j-1] + insertion_cost, 			# insert
+				D[i-1,j-1] + substitution_cost 		# substitute
 			) 
 	return D[m,n]
 ```
@@ -169,11 +171,13 @@ def edit_distance(str_1, str_2):
 			if s[i] == t[j]:
 				substitution_cost = 0
 			else:
+				deletion_cost = 2
+				insertion_cost = 2
 				substitution_cost = 1
 			D[i,j] = minimum(
-				D[i-1,j] + 1, 						# delete
-			D[i,j-1] + 1, 							# insert
-			D[i-1,j-1] + substitution_cost 			# substitute
+				D[i-1,j] + deletion_cost, 			# delete
+				D[i,j-1] + insertion_cost, 			# insert
+				D[i-1,j-1] + substitution_cost 		# substitute
 			) 
 	return D[m,n]
 ```
