@@ -115,7 +115,65 @@ so the algorithm correctly returns 0.
 
 We will prove by induction. Suppose we are at the $k$-th step of the algorithm and assume that in all previous steps the number of inversions have been computed correctly and list $A_k$ is sorted correctly. At the step $k$ we then split $A_k$ into `left` and `right`. Then we have already demonstrated above how the `merge_inversion` will correctly merge `left` and `right` and increment the `inversion` counter. Applying the principle of mathematical induction we conclude that the algorithm is correct.
 
-# Strings
+# String distance
 
 
+## Pseudocode
 
+### (a) Simple
+
+```
+def edit_distance(str_1, str_2):
+	# Initialize a distance matrix:
+	m = len(str_1)
+	n = len(str_2)
+	D = matrix (m x n)
+	set each element in D to zero
+	# Set O-th row...
+	for i from 1 to m:
+		D[i,0] = i
+	for j from 1 to n:
+		D[0,j] = j
+ 	# Recursion:
+	for j from 1 to n:
+		for i from 1 to m:
+			if s[i] == t[j]:
+				substitution_cost = 0
+			else:
+				substitution_cost = 1
+			D[i,j] = minimum(
+				D[i-1,j] + 1, 						# delete
+			D[i,j-1] + 1, 							# insert
+			D[i-1,j-1] + substitution_cost 			# substitute
+			) 
+	return D[m,n]
+```
+
+### (b) Penalty 
+
+```
+def edit_distance(str_1, str_2):
+	# Initialize:
+	m = len(str_1)
+	n = len(str_2)
+	D = matrix (m x n)
+	set each element in D to zero
+	# Set O-th row...
+	for i from 1 to m:
+		D[i,0] = i
+	for j from 1 to n:
+		D[0,j] = j
+ 	# Recursion:
+	for j from 1 to n:
+		for i from 1 to m:
+			if s[i] == t[j]:
+				substitution_cost = 0
+			else:
+				substitution_cost = 1
+			D[i,j] = minimum(
+				D[i-1,j] + 1, 						# delete
+			D[i,j-1] + 1, 							# insert
+			D[i-1,j-1] + substitution_cost 			# substitute
+			) 
+	return D[m,n]
+```
