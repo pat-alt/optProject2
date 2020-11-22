@@ -1,6 +1,6 @@
 # Inversion
 
-The algorithm we will perform is the powerful `mergesort`, but in each step of the merging phase we will count the inversions. Taking advantage of the fact that the two arrays $\mathbf{l}$ and $\mathbf{r}$ that we are comparing at each step $k$ are already sorted in non-decreasing order, we have that if $\mathbf{l}_i > \mathbf{r}_j$ then this implies that $\mathbf{l}_i > \mathbf{r}_m$ for all $m > j$.
+The algorithm we will perform is the powerful *MergeSort*, but in each step of the merging phase we will count the inversions. Taking advantage of the fact that the two arrays $\mathbf{l}$ and $\mathbf{r}$ that we are comparing at each step $k$ are already sorted in non-decreasing order, we have that if $\mathbf{l}_i > \mathbf{r}_j$ then this implies that $\mathbf{l}_i > \mathbf{r}_m$ for all $m > j$.
 
 ## Pseudocode
 
@@ -24,7 +24,7 @@ def count_inversions(A):
 		return merge_inversion(left,right,inv_left,inv_right)
 ```
 
-The `merge_inversion` function implements the $k$-th step logic: *mergesort* and *counting inversions*. The latter works in the same way it always does, it compares two elements `left[0]` and `right[0]` and appends the output list `combine` by the smaller value. How inversions are counted should be straight-forward to see as well: when comparing `left[0]` and `right[0]` suppose we have `left[0] > right[0]`, so we have encountered an inversion. Then this implies that since `left` is already sorted in non-decreasing order the `inversion` counter should be incremented by the length of `left`.
+The `merge_inversion` function implements the $k$-th step logic: *MergeSort* and *counting inversions*. The latter works in the same way it always does, it compares two elements `left[0]` and `right[0]` and appends the output list `combine` by the smaller value. How inversions are counted should be straight-forward to see as well: when comparing `left[0]` and `right[0]` suppose we have `left[0] > right[0]`, so we have encountered an inversion. Then this implies that since `left` is already sorted in non-decreasing order the `inversion` counter should be incremented by the length of `left`.
 
 ```
 def merge_inversion(left,right,inv_left,inv_right):
@@ -69,6 +69,32 @@ It should be straight-forward to see that in the remainder of the divide phase w
 
 ## Complexity
 
+Let $T(n)$ the time complexity of the algorithm. Given that *MergeSort* involves splitting the list in then recursively *MergeSort* twice at each recursion we have
+
+$$
+\begin{aligned}
+&&T(n)&=2T\left(\frac{n}{2}\right) + \mathcal{O}(n)\\
+\end{aligned}
+$$
+
+where $\mathcal{O}(n)$ corresponds to the complexity of merging the two sub-arrays again. Then we can derive the complexity as follows:
+
+$$
+\begin{aligned}
+&&T(n)&=2T\left(\frac{n}{2}\right) + \mathcal{O}(n)\\
+&& &=2\left[2T\left(\frac{n}{4}\right) + \mathcal{O}(\frac{n}{2}) \right]+ \mathcal{O}(n) \\
+&& &= 2^K T\left(\frac{n}{2^K}\right) + \sum_{k=0}^{K-1}2^k \mathcal{O}(\frac{n}{2^k})\\
+&& &= n T\left(1\right) + \sum_{k=0}^{K-1}n \mathcal{O}(1)\\
+\end{aligned}
+$$
+
+Note that $n \mathcal{O}(1)=\mathcal{O}(n)$ and hence
+
+$$
+\begin{aligned}
+&& T(n)&=k \mathcal{O}(n) = \mathcal{O}(n \log n) \\
+\end{aligned}
+$$
 
 
 ## Proof of correctness
