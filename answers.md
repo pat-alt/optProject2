@@ -215,3 +215,25 @@ Note that here we are looking at nested loop where the $j$-loop requires $n$ ope
 
 ## Proof of correctness
 
+Consider:
+1. the problem of converting string A to string B with minimum edits.
+2. the problem of converting substring A[:i] to substring B[:j] with minimum edits.
+
+As indicated above, let i, j be the i'th and j'th position of A and B, respectively.
+Considering the trivial cases where (i=0, j>0) or (i>0, j=0) we find the trivial solutions by simply inserting
+all j>0 characters and deleting all i>0 characters, respectively. The strategies for these 2 cases are optimal,
+as they are the only options in these situations.
+If we can find a way to arrive from any optimal sub-problem (i,j) to one of these trivial cases 
+by always choosing the optimal sub-step in between, we have proven optimality.
+Therefore, let's consider the case (i,j): There are always only 3 ways to have arrived at (i,j), 
+From (i-1,j), (i,j-1), or (i-1,j-1). We can assume optimality at (i,j) by assuming optimality for all
+these 3 potential paths and performing the optimal step (the one that minimizes the edit costs)
+to arrive at (i,j).
+Applying the same logic to the sub-problems' sub-problems, etc., we inevitably arrive at one
+of the trivially
+optimal cases introduced above. (Keep in mind that when moving back from (i,j) to 
+the cost-minimizing
+sub-problem we always go either up in the matrix, 
+left in the matrix, or up and left in the matrix, 
+so in each step backwards at least one of the indices
+i, j is reduced by 1, but never by more than 1)
