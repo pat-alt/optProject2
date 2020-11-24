@@ -1,3 +1,5 @@
+**Authors**: Elio Abikaram, Marc Agustí, Patrick Altmeyer, Simon Neumeyer
+
 # Inversion
 
 The algorithm we will perform is the powerful *MergeSort*, but in each step of the merging phase we will count the inversions. Taking advantage of the fact that the two arrays $\mathbf{l}$ and $\mathbf{r}$ that we are comparing at each step $k$ are already sorted in non-decreasing order, we have that if $\mathbf{l}_i > \mathbf{r}_j$ then this implies that $\mathbf{l}_i > \mathbf{r}_m$ for all $m > j$.
@@ -115,12 +117,34 @@ It should be straight-forward to see that in the remainder of the divide phase w
 
 ![Schema](www/scheme.png) 
 
-# String distance
+# String editing
 
+To solve this problem we can use a the Levenstein distance for two strings $A$ and $B$
+
+$$
+\begin{equation}
+\begin{aligned}
+&& \text{lev}(A,B)&=\begin{cases}
+|A| && \text{if } |B|=0 \\ 
+|B| && \text{if } |A|=0 \\
+\text{lev}(\text{tail}(A),\text{tail}(B)) && \text{if } A[0]=B[0] \\
+1 + \min \begin{cases}
+\text{lev}(\text{tail}(A),B) \\
+\text{lev}(A,\text{tail}(B)) \\
+\text{lev}(\text{tail}(A),\text{tail}(B)) \\
+\end{cases} && \text{otherwise.} \\
+\end{cases}
+\end{aligned}
+\end{equation}
+$$
+
+where $|S|$ denotes the length of a string $S$. Below we first go through the pseudocode for (a) and (b) and then derive complexity and prove correctness for the general case (applies to both (a) and (b)).
 
 ## Pseudocode
 
 ### (a) Simple
+
+Below is the pseudocode for the first case where all operations carry the same cost. As with the example from class where we considered a dynamic programming algorithm to identify the longest common subsequence we firstly initialize a matrix or zeros of dimension $(m \times n)$, where $m$ and $n$ correspond to the lengths of the first and seconds string, respectively. Contrary to the LCS algorithm we set entries in the 0-th row and column equal to the row and column indices, respectively, rather than zeros. We then iterate over rows and columns and assign entries according to the rules outlined above. To store the optimal sequence we also check at each step which operation minimizes the cost of editing. In case no operation is necessary at all - the case where $A[0]=B[0]$ - the cost is zero and we assign `None` to the corresponding step of the optimal sequence.
 
 ```
 def edit_distance(str_1, str_2):
@@ -162,7 +186,13 @@ def edit_distance(str_1, str_2):
 	return D[m,n], optimal_sequence
 ```
 
+Below we show a stylized example to illustrate how the algorithm operates. Let us consider the case of transforming the word "MARC" to "MAN". In green we show the 0-th row/column. The optimal sequence is highlighted in red. For the first two letters, no action is required and hence the cost is zero in each case. Substuting the letter "N" for "R" carries cost 1. Finally, deleting the letter "C" costs 1 also, so the total cost is 2. It is unsurprising and straight-forward to see that transforming "MAN" to "MARC" carries the same cost.
+
+![Schema](www/scheme2.png)
+
 ### (b) Increased penalty for delete/insert
+
+This code is equivalent except for the fact that we have changed the costs associated with deleting and inserting letters as desired. 
 
 ```
 def edit_distance(str_1, str_2):
@@ -203,10 +233,6 @@ def edit_distance(str_1, str_2):
 	return D[m,n], optimal_sequence
 ```
 
-## Example
-
-![Schema](www/scheme2.png)
-
 ![Schema](www/scheme3.png)
 
 ## Complexity
@@ -217,23 +243,23 @@ Note that here we are looking at nested loop where the $j$-loop requires $n$ ope
 
 Consider:
 1. the problem of converting string A to string B with minimum edits.
-2. the problem of converting substring A[:i] to substring B[:j] with minimum edits.
+2. the problem of converting substring `A[:i]` to substring `B[:j]` with minimum edits.
 
-As indicated above, let i, j be the i'th and j'th position of A and B, respectively.
-Considering the trivial cases where (i=0, j>0) or (i>0, j=0) we find the trivial solutions by simply inserting
-all j>0 characters and deleting all i>0 characters, respectively. The strategies for these 2 cases are optimal,
+As indicated above, let $i$, $j$ be the $i$'th and $j$'th position of A and B, respectively.
+Considering the trivial cases where $(i=0, j>0)$ or $(i>0, j=0)$ we find the trivial solutions by simply inserting
+all $j>0$ characters and deleting all $i>0$ characters, respectively. The strategies for these 2 cases are optimal,
 as they are the only options in these situations.
-If we can find a way to arrive from any optimal sub-problem (i,j) to one of these trivial cases 
+If we can find a way to arrive from any optimal sub-problem $(i,j)$ to one of these trivial cases 
 by always choosing the optimal sub-step in between, we have proven optimality.
-Therefore, let's consider the case (i,j): There are always only 3 ways to have arrived at (i,j), 
-From (i-1,j), (i,j-1), or (i-1,j-1). We can assume optimality at (i,j) by assuming optimality for all
+Therefore, let's consider the case $(i,j)$: There are always only 3 ways to have arrived at $(i,j)$, 
+From $(i-1,j)$, $(i,j-1)$, or $(i-1,j-1)$. We can assume optimality at $(i,j)$ by assuming optimality for all
 these 3 potential paths and performing the optimal step (the one that minimizes the edit costs)
-to arrive at (i,j).
+to arrive at $(i,j)$.
 Applying the same logic to the sub-problems' sub-problems, etc., we inevitably arrive at one
 of the trivially
-optimal cases introduced above. (Keep in mind that when moving back from (i,j) to 
+optimal cases introduced above. (Keep in mind that when moving back from $(i,j)$ to 
 the cost-minimizing
 sub-problem we always go either up in the matrix, 
 left in the matrix, or up and left in the matrix, 
 so in each step backwards at least one of the indices
-i, j is reduced by 1, but never by more than 1)
+$i$, $j$ is reduced by 1, but never by more than 1)
