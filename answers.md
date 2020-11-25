@@ -6,7 +6,7 @@ The algorithm we will perform is the powerful *MergeSort*, but in each step of t
 
 ## Pseudocode
 
-The pseudo-code of this algorithm will consists of two functions, `count_inversions` and `merge_inversion`. The former is the main, recursive function that uses the `merge_inversion` as a sub-method. To understand the pseudo-code let us consider a simple example of a list: `A=[3,1,2,4]`, which has only one inversion. The `count_inversions` function will recursively split `A` into halves until it reaches the $K$-th step when $A_K$ is of length 1. At that point it exits the recursion and simply returns the list $A_K$ itself and a pseudo-inversion count of $0$. At all other steps it returns the output from `merge_inversion(left,right,inv_left,inv_right)` - a list sorted in non-decreasing order and the cumulative count of inversions.
+The pseudo-code of this algorithm will consists of two functions, `count_inversions` and `merge_inversion`. The former is the main, recursive function that uses the `merge_inversion` as a sub-method. To understand the pseudo-code let us consider a simple example of a list: `A=[3,1,2,4]`, which has two inversions. The `count_inversions` function will recursively split `A` into halves until it reaches the $K$-th step when $A_K$ is of length 1. At that point it exits the recursion and simply returns the list $A_K$ itself and a pseudo-inversion count of $0$. At all other steps it returns the output from `merge_inversion(left,right,inv_left,inv_right)` - a list sorted in non-decreasing order and the cumulative count of inversions.
 
 ```
 def count_inversions(A):
